@@ -1,0 +1,27 @@
+{
+  "name": "FB Download",
+  "version": "1.0.0",
+  "description": "Download Ad Videos from Facebook Timeline",
+  "manifest_version": 3,
+  "author": "Deelip Khanal",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Latest Covid Report"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.facebook.com/ads/library/*",
+        "https://amplecube.com/*",
+        "https://www.facebook.com/*"
+      ],
+      "js": [
+        "script.js"
+      ],
+      "css": [
+        "style.css"
+      ],
+      "run_at": "document_end"
+    }
+  ]
+}

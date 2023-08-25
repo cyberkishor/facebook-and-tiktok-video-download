@@ -1,0 +1,103 @@
+.ample-button {
+  padding: 0 16px 16px 16px;
+  display: flex;
+  vertical-align: middle;
+  align-items: center;
+}
+
+.ample-button-link {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #d80909;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+}
+
+.ample-button.success a {
+  background: green;
+  opacity: 0.7;
+}
+
+.downloadPopup {
+  position: relative;
+  text-align: center;
+  width: 100%;
+}
+
+.formPopup {
+  display: none;
+  position: fixed;
+  left: 45%;
+  top: 30%;
+  /* transform: translate(-50%, 5%); */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  z-index: 99999;
+}
+
+.formPopup.active {
+  display: block;
+}
+
+.formContainer {
+  max-width: 350px;
+  width: 350px;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.formContainer input[type=text],
+.formContainer select,
+.formContainer input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 20px 0;
+  border: none;
+  background: #eee;
+}
+
+.formContainer input[type=text]:focus,
+.formContainer input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+.formContainer .btn {
+  padding: 12px 20px;
+  border: none;
+  background-color: #8ebf42;
+  color: #fff;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 15px;
+  opacity: 0.8;
+}
+
+.formContainer .cancel {
+  background-color: #cc0000;
+}
+
+input#new_category {
+  width: 90%;
+}
+
+.formContainer .btn:hover,
+.openButton:hover {
+  opacity: 1;
+}
+
+.old_category_wrap.hidden,
+.new_category_wrap {
+  display: none;
+}
+
+.new_category_wrap.active {
+  display: block;
+}
