@@ -12,8 +12,8 @@
     {
       "matches": [
         "https://www.facebook.com/ads/library/*",
-        "https://amplecube.com/*",
-        "https://www.facebook.com/*"
+        "https://www.facebook.com/*",
+        "https://www.tiktok.com/*"
       ],
       "js": [
         "script.js"

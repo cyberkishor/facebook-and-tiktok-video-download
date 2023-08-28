@@ -13,25 +13,41 @@ var observer = new MutationObserver(function (mutationsList) {
       // Loop through the added nodes
       for (var i = 0; i < mutation.addedNodes.length; i++) {
         var node = mutation.addedNodes[ i ];
-        // Check if the added node has the desired class
-        // if (node.classList.contains('_8o0a')) {
-        //   var closestNode = node.querySelectorAll('video')[0];
-        //   if (closestNode) {
-        //     // Add the closest node and the corresponding button to the array
-        //     acc.push({ node: closestNode, button: node });
-        //   }
-        // }
-        // Check if the added node has child elements with the desired class
-        var nestedNodes = node.querySelectorAll('._8o0a, .x1hl2dhg');
-        // console.log(nestedNodes);
-        if (nestedNodes.length > 0) {
-          // Loop through the nested nodes and add them to the array
-          for (var j = 0; j < nestedNodes.length; j++) {
-            var childNode = nestedNodes[ j ]
-            var closestChildNode = childNode.querySelectorAll('video, img')[ 0 ];
-            if (closestChildNode) {
-              // Add the closest node and the corresponding button to the array
-              acc.push({ node: closestChildNode, button: childNode });
+        if (!node) continue;
+
+        if (node.baseURI.includes('tiktok')) {
+          console.log(node.nodeName, node.nodeType);
+
+          if (node.nodeName != 'VIDEO') continue;
+          // Check if the added node has child elements with the desired class
+          var nestedNodes = node;
+          console.log(nestedNodes);
+          if (!nestedNodes) continue;
+
+
+          acc.push({ node: nestedNodes, button: nestedNodes });
+
+        } else {
+          // Check if the added node has the desired class
+          // if (node.classList.contains('_8o0a')) {
+          //   var closestNode = node.querySelectorAll('video')[0];
+          //   if (closestNode) {
+          //     // Add the closest node and the corresponding button to the array
+          //     acc.push({ node: closestNode, button: node });
+          //   }
+          // }
+          // Check if the added node has child elements with the desired class
+          var nestedNodes = node.querySelectorAll('._8o0a, .x1hl2dhg');
+          // console.log(nestedNodes);
+          if (nestedNodes.length > 0) {
+            // Loop through the nested nodes and add them to the array
+            for (var j = 0; j < nestedNodes.length; j++) {
+              var childNode = nestedNodes[ j ]
+              var closestChildNode = childNode.querySelectorAll('video, img')[ 0 ];
+              if (closestChildNode) {
+                // Add the closest node and the corresponding button to the array
+                acc.push({ node: closestChildNode, button: childNode });
+              }
             }
           }
         }
@@ -64,14 +80,23 @@ var observer = new MutationObserver(function (mutationsList) {
     }
     link.textContent = 'Download';
     divElement.appendChild(link);
-    nodeData.button.parentNode.insertBefore(divElement, nodeData.button.nextSibling);
+
+    if (window.document.baseURI.includes('facebook.com')) {
+      //facebook
+      nodeData.button.parentNode.insertBefore(divElement, nodeData.button.nextSibling);
+
+    } else {
+      //ticktok
+      nodeData.node.parentNode.append(divElement);
+    }
+
 
 
     // click event prevent
     link.addEventListener('click', function (e) {
       e.preventDefault();
       var el = e.target;
-      el = encodeURI(el);
+      // el = encodeURI(el);
 
       //set hidden value for the download form
       var url_input = document.getElementById('ample_download_url');
@@ -88,26 +113,6 @@ var observer = new MutationObserver(function (mutationsList) {
       oldInput.classList.remove('hidden');
 
       return 1;
-
-      var data = { url: el, type: type };
-
-      try {
-        const response = fetch("https://www.amplecube.com/fb/d.php", {
-          method: "POST", // or 'PUT'
-          mode: 'no-cors',
-
-          body: JSON.stringify(data),
-        })
-          .then(function (response) {
-            // if (response.ok) {
-            link.textContent = 'Success';
-            divElement.classList.add('success');
-            // }
-          });
-      } catch (error) {
-        console.error("Error:", error);
-      }
-
     })
   });
 });
@@ -116,13 +121,19 @@ var observer = new MutationObserver(function (mutationsList) {
 var config = { attributes: true, childList: true, subtree: true };
 
 // Select the target element
-var target = document.querySelector('[role="main"]');
+if (window.document.baseURI.includes('facebook.com')) {
+  var target = document.querySelector('[role="main"]');
+} else {
+  //for ticktok
+  var target = document.querySelector('#main-content-homepage_hot');
+}
 
 
 //add popup form 
 var html = '\
   <div class="downloadPopup" >\
     <div class="formPopup" id="popupForm">\
+      <div class="close-downloadPopup">X</div>\
       <form class="formContainer" id="formContainer">\
         <input type="hidden" name="url" id="ample_download_url">\
         <input type="hidden" name="type" id="ample_download_type">\
@@ -147,6 +158,57 @@ var body = document.querySelector('body');
 var divSpeed = document.createElement("div");
 divSpeed.innerHTML = html;
 body.prepend(divSpeed);
+
+
+if (window.document.baseURI.includes('tiktok.com')) {
+  //ticktok single page
+  setTimeout(function () {
+
+
+    //tiktok detail page add button
+    var singlePage = document.querySelector('.tiktok-1sb4dwc-DivPlayerContainer');
+    var divElement = document.createElement('div');
+    divElement.classList.add('ample-button');
+    divElement.classList.add('tiktok-button');
+    var link = document.createElement('a');
+    link.classList.add('ample-button-link');
+
+    link.textContent = 'Download';
+    divElement.appendChild(link);
+
+    singlePage.append(divElement);
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      var url_input = document.getElementById('ample_download_url');
+      var type_input = document.getElementById('ample_download_type');
+      url_input.value = e.target.baseURI;
+      type_input.value = 'video';
+
+
+      //enable popup
+      var popup = document.getElementById('popupForm');
+      popup.classList.add('active');
+
+      //remove hidden class
+      var oldInput = document.querySelector('.old_category_wrap');
+      oldInput.classList.remove('hidden');
+
+      return 1;
+
+    });
+
+  }, 5000);
+}
+
+//close poup
+var closePopup = document.querySelector('.close-downloadPopup');
+closePopup.addEventListener('click', function (e) {
+  var popup = document.getElementById('popupForm');
+  popup.classList.remove('active');
+
+});
+
 
 // add new category input
 var AddNew = document.getElementById('add_new_category');
@@ -189,7 +251,7 @@ async function getCategory (url) {
 
 }
 // Calling that async function
-getCategory('https://nrtv.tube/portfolio/category.php');
+getCategory('https://nrtv.tube/category.php');
 
 async function submitDownloadForm (url, data) {
 
@@ -219,7 +281,7 @@ document.querySelector('form.formContainer').addEventListener('submit', (e) => {
   popup.classList.remove('active');
 
 
-  submitDownloadForm('https://nrtv.tube/portfolio/queue.php', data);
+  submitDownloadForm('https://nrtv.tube/queue.php', data);
 
   return true;
 
