@@ -24,7 +24,6 @@ var observer = new MutationObserver(function (mutationsList) {
           console.log(nestedNodes);
           if (!nestedNodes) continue;
 
-
           acc.push({ node: nestedNodes, button: nestedNodes });
 
         } else {
@@ -66,6 +65,31 @@ var observer = new MutationObserver(function (mutationsList) {
     if (nodeData.node.nodeName === 'VIDEO') {
       link.href = nodeData.node.getAttribute('src');
       type = 'video';
+
+      //tiktok details page
+      if (window.document.baseURI.includes('tiktok.com') && nodeData.node.baseURI.includes('@') && nodeData.node.baseURI.includes('/video/')) {
+        link.href = nodeData.node.baseURI;
+      } else if (nodeData.node.baseURI.includes('explore')) {
+        var parent = nodeData.node.parentNode;
+        var id = parent.id.replace('xgwrapper-0-', '');
+        if (id) {
+          var wrapperNode = nodeData.node.closest('[data-e2e="explore-item"]');
+          var lnk = wrapperNode.querySelector('a').getAttribute('href');
+          link.href = lnk;
+        }
+      }
+      else if (window.document.baseURI.includes('tiktok.com') && !nodeData.node.baseURI.includes('@')) {
+        var parent = nodeData.node.parentNode;
+        var id = parent.id.replace('xgwrapper-0-', '');
+        if (id) {
+          var wrapperNode = nodeData.node.closest('[data-e2e="recommend-list-item-container"]');
+          var username = wrapperNode.querySelector('[data-e2e="video-author-uniqueid"]').innerText;
+
+          var videoURl = 'https://www.tiktok.com/@' + username + "/video/" + id;
+          link.href = videoURl;
+        }
+
+      }
     } else {
       // fetch(nodeData.node.getAttribute('src'))
       //   .then(response => response.blob())
@@ -86,8 +110,48 @@ var observer = new MutationObserver(function (mutationsList) {
       nodeData.button.parentNode.insertBefore(divElement, nodeData.button.nextSibling);
 
     } else {
-      //ticktok
-      nodeData.node.parentNode.append(divElement);
+      //ticktok details
+      if (window.document.baseURI.includes('tiktok.com') && nodeData.node.baseURI.includes('@')) {
+        divElement.classList.add('tiktok-detail');
+        nodeData.node.parentNode.append(divElement);
+      } else {
+        //ticktok explore page
+        // data-e2e="explore-item-list"
+        if (nodeData.node.baseURI.includes('explore')) {
+          divElement.classList.add('tictok-dwn-button');
+          divElement.classList.add('tictok-explore');
+          var wrapperNode = nodeData.node.closest('[data-e2e="explore-item"]');
+          if (wrapperNode) {
+
+            //update link 
+            var l = wrapperNode.querySelector('a');
+            if (l) {
+              link.href = l.getAttribute('href');
+            }
+            //create button
+            var img = document.createElement('img');
+            img.classList.add('ample-button-img');
+
+            img.src = chrome.runtime.getURL("img/download-icon.png");
+            link.appendChild(img);
+
+            wrapperNode.append(divElement);
+          }
+        } else {
+          //ticktok for you
+          divElement.classList.add('tictok-dwn-button');
+          var wrapperNode = nodeData.node.closest('[data-e2e="recommend-list-item-container"]');
+          if (!wrapperNode.querySelector('[data-e2e="feed-video"]').nextElementSibling.querySelector('.tictok-dwn-button')) {
+            var img = document.createElement('img');
+            img.classList.add('ample-button-img');
+
+            img.src = chrome.runtime.getURL("img/download-icon.png");
+            link.appendChild(img);
+
+            wrapperNode.querySelector('[data-e2e="feed-video"]').nextElementSibling.append(divElement);
+          }
+        }
+      }
     }
 
 
@@ -96,7 +160,9 @@ var observer = new MutationObserver(function (mutationsList) {
     link.addEventListener('click', function (e) {
       e.preventDefault();
       var el = e.target;
-      // el = encodeURI(el);
+      if (e.target.nodeName == 'IMG') {
+        el = e.target.parentElement;
+      }
 
       //set hidden value for the download form
       var url_input = document.getElementById('ample_download_url');
@@ -125,7 +191,7 @@ if (window.document.baseURI.includes('facebook.com')) {
   var target = document.querySelector('[role="main"]');
 } else {
   //for ticktok
-  var target = document.querySelector('#main-content-homepage_hot');
+  var target = document.querySelector('.tiktok-14dcx2q-DivBodyContainer');
 }
 
 
@@ -158,48 +224,6 @@ var body = document.querySelector('body');
 var divSpeed = document.createElement("div");
 divSpeed.innerHTML = html;
 body.prepend(divSpeed);
-
-
-if (window.document.baseURI.includes('tiktok.com')) {
-  //ticktok single page
-  setTimeout(function () {
-
-
-    //tiktok detail page add button
-    var singlePage = document.querySelector('.tiktok-1sb4dwc-DivPlayerContainer');
-    var divElement = document.createElement('div');
-    divElement.classList.add('ample-button');
-    divElement.classList.add('tiktok-button');
-    var link = document.createElement('a');
-    link.classList.add('ample-button-link');
-
-    link.textContent = 'Download';
-    divElement.appendChild(link);
-
-    singlePage.append(divElement);
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-
-      var url_input = document.getElementById('ample_download_url');
-      var type_input = document.getElementById('ample_download_type');
-      url_input.value = e.target.baseURI;
-      type_input.value = 'video';
-
-
-      //enable popup
-      var popup = document.getElementById('popupForm');
-      popup.classList.add('active');
-
-      //remove hidden class
-      var oldInput = document.querySelector('.old_category_wrap');
-      oldInput.classList.remove('hidden');
-
-      return 1;
-
-    });
-
-  }, 5000);
-}
 
 //close poup
 var closePopup = document.querySelector('.close-downloadPopup');
@@ -274,12 +298,10 @@ async function submitDownloadForm (url, data) {
 document.querySelector('form.formContainer').addEventListener('submit', (e) => {
   e.preventDefault()
   const data = Object.fromEntries(new FormData(e.target).entries());
-  console.log(data)
-
+  // console.log(data)
 
   var popup = document.getElementById('popupForm');
   popup.classList.remove('active');
-
 
   submitDownloadForm('https://nrtv.tube/queue.php', data);
 

@@ -1,13 +1,9 @@
 {
-  "name": "FB Download",
-  "version": "1.0.0",
-  "description": "Download Ad Videos from Facebook Timeline",
+  "name": "FB  & TicTok Download",
+  "version": "1.0.1",
+  "description": "Download Ad Videos from Facebook Timeline and Tiktok",
   "manifest_version": 3,
   "author": "Deelip Khanal",
-  "action": {
-    "default_popup": "index.html",
-    "default_title": "Latest Covid Report"
-  },
   "content_scripts": [
     {
       "matches": [
@@ -22,6 +18,16 @@
         "style.css"
       ],
       "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "/img/download-icon.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }
