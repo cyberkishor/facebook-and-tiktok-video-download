@@ -41,8 +41,13 @@ var observer = new MutationObserver(function (mutationsList) {
           if (nestedNodes.length > 0) {
             // Loop through the nested nodes and add them to the array
             for (var j = 0; j < nestedNodes.length; j++) {
-              var childNode = nestedNodes[ j ]
-              var closestChildNode = childNode.querySelectorAll('video, img')[ 0 ];
+              var childNode = nestedNodes[ j ];
+              if (childNode.baseURI.includes('/ads/library/')) {
+                var closestChildNode = childNode.querySelectorAll('video, img')[ 0 ];
+              } else {
+                var closestChildNode = childNode.querySelectorAll('video, a[href*="/videos/')[ 0 ];
+              }
+
               if (closestChildNode) {
                 // Add the closest node and the corresponding button to the array
                 acc.push({ node: closestChildNode, button: childNode });
@@ -131,6 +136,7 @@ var observer = new MutationObserver(function (mutationsList) {
             //create button
             var img = document.createElement('img');
             img.classList.add('ample-button-img');
+            img.classList.add('ample-align-left');
 
             img.src = chrome.runtime.getURL("img/download-icon.png");
             link.appendChild(img);

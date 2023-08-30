@@ -33,6 +33,8 @@
   align-items: center;
   display: flex;
   justify-content: center;
+  position: relative;
+  right: unset;
 }
 
 .ample-button.tictok-dwn-button a.ample-button-link {
@@ -149,9 +151,16 @@ input#new_category {
   left: 75%;
 }
 
+.ample-button,
 .ample-button.tictok-dwn-button.tictok-explore,
 .ample-button.tiktok-detail {
   position: absolute;
   top: 5px;
+  right: 5px;
   z-index: 999;
+}
+
+.ample-button.tictok-dwn-button.tictok-explore {
+  left: 5px;
+  right: unset;
 }
